@@ -11,7 +11,8 @@
 
           <v-card title="Card title" text="...">
             <v-card-actions>
-              <v-btn>Click me</v-btn>
+              <v-btn>Archive</v-btn>
+              <v-btn>Delete</v-btn>
             </v-card-actions>
           </v-card>
 
@@ -50,6 +51,8 @@ import AuthLayout from "~/layouts/navbar.vue";
 import Delete from "~/components/DeleteModal.vue";
 import Form from "~/components/task/Form.vue";
 import { ref } from "vue";
+
+definePageMeta({ middleware: "is-logged-out" });
 
 const headers = [
   {

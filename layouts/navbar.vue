@@ -12,7 +12,12 @@
         </v-btn>
 
         <v-spacer></v-spacer>
-        <v-btn variant="outlined" color="red" prepend-icon="mdi-logout"
+        <v-btn
+          :loading="loading"
+          variant="outlined"
+          color="red"
+          prepend-icon="mdi-logout"
+          @click="logout()"
           >LOGOUT</v-btn
         >
       </v-container>
@@ -27,4 +32,15 @@ const links = [
   { text: "Task", route: "/home" },
   { text: "Tags", route: "/tags" },
 ];
+
+import { useUserStore } from "~~/stores/users";
+const userStore = useUserStore();
+const router = useRouter();
+const loading = ref();
+const logout = async () => {
+  loading.value = true;
+  await userStore.logout();
+  loading.value = false;
+  router.push("/");
+};
 </script>

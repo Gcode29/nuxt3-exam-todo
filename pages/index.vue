@@ -1,5 +1,5 @@
 <template>
-  <div id="Login">
+  <div>
     <v-card
       class="mx-auto pa-12 pb-8 mt-5"
       elevation="8"
@@ -73,7 +73,7 @@
           variant="tonal"
           :loading="loading"
           type="submit"
-          @click="homepage"
+          :disabled="!email || !password"
         >
           Log In
         </v-btn>
@@ -82,27 +82,59 @@
         </v-btn>
       </form>
 
-      <v-card-text class="text-center">
-        <a
-          class="text-green text-decoration-none"
-          href="/register"
-          rel="noopener noreferrer"
-        >
+      <div class="text-center">
+        <a class="text-green text-decoration-none" href="/register">
           Sign up now <v-icon icon="mdi-chevron-right"></v-icon>
         </a>
-      </v-card-text>
+      </div>
     </v-card>
   </div>
 </template>
 
 <script setup>
+import { useUserStore } from "~/stores/users";
+const userStore = useUserStore();
+
 const router = useRouter();
+const emailRules = [
+  (v) => !!v || "E-mail is required",
+  (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
+];
+
+const passwordRules = [
+  (v) => !!v || "Password is required",
+  (v) => (v && v.length >= 8) || "Invalid Password",
+];
 
 let loading = ref(false);
+let email = ref();
+let password = ref();
+let visible = ref();
+const errors = ref(null);
 
 const login = async () => {
-  loading.value = true;
-  router.push("/Home");
-  loading.value = false;
+  if (!validateInputs()) {
+    loading.value = true;
+    try {
+      await userStore.getTokens();
+      await userStore.login(email.value, password.value);
+      await userStore.getUser();
+      router.push("/home");
+      loading.value = false;
+    } catch (error) {
+      loading.value = false;
+      errors.value = error.response
+        ? error.response.data.errors
+        : "An error occurred.";
+    }
+  }
+};
+
+const validateInputs = () => {
+  const emailInvalid = emailRules.some((rule) => rule(email.value) !== true);
+  const passwordInvalid = passwordRules.some(
+    (rule) => rule(password.value) !== true
+  );
+  return emailInvalid || passwordInvalid;
 };
 </script>

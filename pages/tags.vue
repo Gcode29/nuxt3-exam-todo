@@ -22,21 +22,18 @@
 
           <v-data-table
             :headers="headers"
-            :items="tags"
+            :items="tagStore.tags"
             class="elevation-1"
           >
-            <template v-slot:item.glutenfree="{ item }">
-              <v-checkbox-btn
-                v-model="item.columns.glutenfree"
-                disabled
-              ></v-checkbox-btn>
-            </template>
             <template v-slot:item.actions="{ item }">
-              <Delete 
+              <v-row>
+                <Form :tag="item" /> |
+                <Delete
                   :item="item"
                   :name="item.name"
                   @delete="deleteTag(item)"
-              />
+                />
+              </v-row>
             </template>
           </v-data-table>
         </v-card>
@@ -49,20 +46,20 @@
 import AuthLayout from "~/layouts/navbar.vue";
 import Form from "~/components/tags/Form.vue";
 import Delete from "~/components/DeleteModal.vue";
-import { useTagStore } from '~~/stores/tags';
+import { useTagStore } from "~~/stores/tags";
 import { ref } from "vue";
 
 const tagStore = useTagStore();
 const search = ref();
 
-const onSearch = async() => {
+const onSearch = async () => {
   await fetchData();
 };
 
 const deleteTag = async (item) => {
-  await tagStore.delete_tag(item.id);
+  await tagStore.delete_tag(item.value);
   await tagStore.getTags();
-}
+};
 
 const fetchData = async () => {
   const payload = new URLSearchParams();
@@ -84,17 +81,6 @@ const headers = [
     align: "start",
     key: "name",
   },
-  { title: "Actions", align: "center", key: "actions" },
+  { title: "Actions", key: "actions" },
 ];
-
-const desserts = ref([
-  {
-    name: "Frozen Yogurt",
-    calories: 159,
-    fat: 6.0,
-    carbs: 24,
-    protein: 4.0,
-    iron: "1%",
-  },
-]);
 </script>
