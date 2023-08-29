@@ -12,7 +12,6 @@
           <v-container>
             <v-text-field
               class="mt-2"
-              density="compact"
               v-model="title"
               label="Title"
               variant="outlined"
@@ -21,18 +20,22 @@
 
             <v-text-field
               class="mt-2"
-              density="compact"
               v-model="description"
               label="Description"
               variant="outlined"
               required
             />
 
-            <input type="date" v-model="formattedDate" name="Due Date" />
+           <v-text-field
+              class="mt-2"
+              type="date"
+              label="Due Date"
+              variant="outlined"
+              required
+            />
 
             <v-combobox
               class="mt-2"
-              density="compact"
               v-model="priorityLevel"
               label="Priority Level"
               variant="outlined"
@@ -90,6 +93,7 @@ import useObjectHelper from "~/composables/helper";
 const helper = useObjectHelper();
 
 const dialog = ref(false);
+const loading = ref(false);
 
 const openDialog = (e) => {
   dialog.value = true;

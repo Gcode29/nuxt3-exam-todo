@@ -10,6 +10,11 @@
 
         <v-form ref="form" @submit.prevent="onSubmit">
           <v-container>
+            <span class="text-red font-semibold" v-if="errors">
+              {{
+                errors && errors.name ? errors.name[0] : ""
+              }}
+            </span>
             <v-text-field
               class="mt-2"
               density="compact"
@@ -23,7 +28,7 @@
           <v-container>
             <v-row>
               <v-col>
-                <v-btn block depressed type="submit">
+                <v-btn block depressed type="submit" :disabled="!name" :loading="loading">
                   <span>Save</span>
                 </v-btn>
               </v-col>
@@ -41,9 +46,13 @@
 
 <script setup>
 import useObjectHelper from "~/composables/helper";
+import { useTagStore } from "~/stores/tags";
 
 const helper = useObjectHelper();
-
+const tagStore = useTagStore();
+const name = ref('');
+const loading = ref(false);
+const errors = ref(null);
 const dialog = ref(false);
 
 const openDialog = (e) => {
@@ -53,4 +62,37 @@ const openDialog = (e) => {
 const close = (e) => {
   dialog.value = false;
 };
+
+const onSubmit = async () => {
+  loading.value = true;
+  errors.value = null;
+  
+  await tagStore.save_tag(name.value);
+  dialog.value = false;
+  loading.value = false;
+  await tagStore.getTags();
+  // try {
+  //   if (helper.isEmptyObject(props.tag)) {
+  //     //save
+  //     // await userStore.getTokens();
+  //     await tagStore.save_tag(name.value);
+  //     dialog.value = false;
+  //     loading.value = false;
+  //     await tagStore.getTags();
+  //   } else {
+  //     // update
+  //     // await userStore.getTokens();
+  //     await tagStore.update_tag(
+  //       name.value,
+  //       props.tag.id
+  //     );
+  //     dialog.value = false;
+  //     loading.value = false;
+  //     await tagStore.getTags();
+  //   }
+  // } catch (error) {
+  //   loading.value = false;
+  //   errors.value = error.response ? error.response.data.errors : "An error occured.";
+  // }
+}
 </script>
