@@ -1,6 +1,5 @@
 <template>
   <v-app id="inspire">
-    <h1>WELCOME</h1>
-    <!--  -->
+    <NuxtPage />
   </v-app>
 </template>
