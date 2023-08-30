@@ -12,6 +12,7 @@ export const useTagStore = defineStore("tag", {
   actions: {
     async getTags(payload) {
       const { data } = await $axios.get("api/tags?" + payload);
+
       this.$state.tags = data.data;
     },
 

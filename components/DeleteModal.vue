@@ -1,13 +1,12 @@
 <template>
   <div>
     <v-btn
+      size="small"
       color="red"
-      prepend-icon="mdi-trash-can"
+      icon="mdi-trash-can"
       variant="text"
       @click="open"
-    >
-      DELETE</v-btn
-    >
+    />
 
     <v-dialog v-model="dialog" width="400">
       <v-card class="mx-auto">

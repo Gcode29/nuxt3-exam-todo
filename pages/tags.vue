@@ -9,6 +9,14 @@
             <Form />
           </v-toolbar>
 
+          <v-progress-linear
+            :active="loading"
+            :indeterminate="loading"
+            absolute
+            bottom
+            color="teal-accent-4"
+          ></v-progress-linear>
+
           <v-row>
             <v-col cols="12" class="mt-5">
               <v-text-field
@@ -27,10 +35,10 @@
           >
             <template v-slot:item.actions="{ item }">
               <v-row>
-                <Form :tag="item" /> |
+                <Form :tag="item.selectable" />
                 <Delete
                   :item="item"
-                  :name="item.name"
+                  :name="item.selectable.name"
                   @delete="deleteTag(item)"
                 />
               </v-row>
@@ -39,6 +47,14 @@
         </v-card>
       </v-container>
     </v-main>
+
+    <v-snackbar v-model="snackbar" variant="tonal" color="red" location="top">
+      Tag Deleted !
+
+      <template v-slot:actions>
+        <v-btn variant="text" @click="snackbar = false"> Close </v-btn>
+      </template>
+    </v-snackbar>
   </AuthLayout>
 </template>
 
@@ -51,14 +67,28 @@ import { ref } from "vue";
 
 const tagStore = useTagStore();
 const search = ref();
+const snackbar = ref(false);
+const loading = ref(false);
+const error = ref();
 
 const onSearch = async () => {
   await fetchData();
 };
 
 const deleteTag = async (item) => {
-  await tagStore.delete_tag(item.value);
-  await tagStore.getTags();
+  loading.value = true;
+  error.value = null;
+  try {
+    snackbar.value = true;
+    await tagStore.delete_tag(item.selectable.id);
+    await tagStore.getTags();
+    loading.value = false;
+  } catch (error) {
+    loading.value = false;
+    errors.value = error.response
+      ? error.response.data.errors
+      : "An error occured.";
+  }
 };
 
 const fetchData = async () => {

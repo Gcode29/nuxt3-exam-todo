@@ -13,8 +13,10 @@
       color="blue"
       icon="mdi-pencil-box-outline"
       variant="text"
+      size="small"
       @click="updateTag()"
-    />
+    >
+    </v-btn>
 
     <v-dialog v-model="dialog" width="500" persistent>
       <v-card>
@@ -64,6 +66,19 @@
         </form>
       </v-card>
     </v-dialog>
+
+    <v-snackbar
+      v-model="snackbar"
+      variant="tonal"
+      :color="snackbar_color"
+      location="top"
+    >
+      {{ snackbar_text }}
+
+      <template v-slot:actions>
+        <v-btn variant="text" @click="snackbar = false"> Close </v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
 
@@ -75,6 +90,9 @@ import { useTagStore } from "~/stores/tags";
 const userStore = useUserStore();
 const helper = useObjectHelper();
 const tagStore = useTagStore();
+let snackbar_color = ref("");
+let snackbar_text = ref("");
+let snackbar = ref(false);
 let name = ref();
 let id = ref();
 const loading = ref(false);
@@ -103,7 +121,7 @@ const updateTag = () => {
   console.log(props.tag);
 
   if (!helper.isEmptyObject(props.tag)) {
-    id.value = props.tag.value;
+    id.value = props.tag.id;
     name.value = props.tag.name;
   }
 };
@@ -116,6 +134,9 @@ const onSubmit = async () => {
       //save
       await userStore.getTokens();
       await tagStore.save_tag(name.value);
+      snackbar_color.value = "teal";
+      snackbar.value = true;
+      snackbar_text.value = "Tag Successfully Saved !";
       dialog.value = false;
       loading.value = false;
       await tagStore.getTags();
@@ -123,6 +144,9 @@ const onSubmit = async () => {
       // update
       await userStore.getTokens();
       await tagStore.update_tag(name.value, props.tag.id);
+      snackbar_color.value = "teal";
+      snackbar.value = true;
+      snackbar_text.value = "Tag Successfully Updated !";
       dialog.value = false;
       loading.value = false;
       await tagStore.getTags();
