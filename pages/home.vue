@@ -52,7 +52,7 @@
                     <template v-slot:prepend>
                       <v-list-item-action start>
                         <v-checkbox-btn
-                          @click="task_complete(item.id)"
+                          @click="taskComplete(item.id)"
                         ></v-checkbox-btn>
                       </v-list-item-action>
                     </template>
@@ -64,7 +64,8 @@
                         variant="text"
                         size="small"
                         icon="mdi-archive-arrow-down"
-                      ></v-btn>
+                        @click="archiveTask"
+                      />
                       <Delete
                         :item="item"
                         :name="item.title"
@@ -151,7 +152,7 @@
                     <template v-slot:prepend>
                       <v-list-item-action start>
                         <v-checkbox-btn
-                          @click="task_uncomplete(item.id)"
+                          @click="taskUncomplete(item.id)"
                         ></v-checkbox-btn>
                       </v-list-item-action>
                     </template>
@@ -257,7 +258,17 @@ const getNextPage = () => {
   }
 };
 
-const task_complete = async (item) => {
+const archiveTask = async () => {
+  loading.value = true;
+  try {
+    // soft delete
+  } catch (error) {
+    console.log(error);
+    loading.value = false;
+  }
+};
+
+const taskComplete = async (item) => {
   loading.value = true;
   try {
     await taskStore.complete_task(item);
@@ -269,7 +280,7 @@ const task_complete = async (item) => {
   }
 };
 
-const task_uncomplete = async (item) => {
+const taskUncomplete = async (item) => {
   loading2.value = true;
   try {
     await taskStore.uncomplete_task(item);
