@@ -2,6 +2,7 @@
   <div>
     <v-btn
       class="mr-2"
+      variant="outlined"
       v-if="helper.isEmptyObject(props.task)"
       prepend-icon="mdi-plus"
       @click="openDialog"

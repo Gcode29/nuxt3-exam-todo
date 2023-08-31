@@ -36,6 +36,10 @@
             ></v-checkbox>
           </v-col>
 
+          <v-col cols="12">
+            <Form />
+          </v-col>
+
           <v-col cols="12" v-for="task in taskStore.tasks.data" lg="6" xl="3">
             <v-card variant="outlined">
               <v-card-title class="d-flex justify-space-between">
