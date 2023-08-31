@@ -1,233 +1,49 @@
 <template>
   <AuthLayout>
     <v-main>
-      <!-- <v-row>
-        <v-container>
-          <v-col
-            cols="12"
-            offset-lg="3"
-            lg="6"
-            offset-md="3"
-            md="6"
-            offset-sm="2"
-            sm="8"
-          >
-            <v-text-field
-              variant="outlined"
-              placeholder="Search :"
-              prepend-inner-icon="mdi-magnify"
-            />
-          </v-col>
-        </v-container>
-        <v-col cols="12" offset-lg="2" lg="4" offset-md="1" md="5">
-          <v-container>
-            <v-card class="mx-auto overflow-auto" max-width="450">
-              <v-toolbar color="teal-lighten-2">
-                <v-toolbar-title>Todo List</v-toolbar-title>
-
-                <v-spacer></v-spacer>
-                <Form />
-              </v-toolbar>
-
-              <v-progress-linear
-                :active="loading"
-                :indeterminate="loading"
-                absolute
-                bottom
-                color="white"
-              ></v-progress-linear>
-
-              <template v-if="taskStore.incompleteTasks?.length > 0">
-                <v-list
-                  lines="three"
-                  select-strategy="classic"
-                  max-height="435"
-                >
-                  <v-list-subheader>Completed</v-list-subheader>
-                  <v-list-item
-                    v-for="item in taskStore.incompleteTasks.filter(
-                      (task) => task.is_completed === 0
-                    )"
-                  >
-                    <template v-slot:prepend>
-                      <v-list-item-action start>
-                        <v-checkbox-btn
-                          @click="taskComplete(item.id)"
-                        ></v-checkbox-btn>
-                      </v-list-item-action>
-                    </template>
-
-                    <template v-slot:append>
-                      <Form :task="item" />
-                      <v-btn
-                        color="teal"
-                        variant="text"
-                        size="small"
-                        icon="mdi-archive-arrow-down"
-                        @click="archiveTask"
-                      />
-                      <Delete
-                        :item="item"
-                        :name="item.title"
-                        @delete="deleteTask(item)"
-                      />
-                    </template>
-
-                    <v-list-item-title>
-                      <ViewForm :task="item" />
-                    </v-list-item-title>
-
-                    <v-list-item-subtitle>
-                      <span class="font-weight-bold">Priority :</span>
-                      {{ displayPriority(item) }}
-                    </v-list-item-subtitle>
-
-                    <v-list-item-subtitle class="mb-3">
-                      <div>Due Date : {{ item.due_date }}</div>
-                    </v-list-item-subtitle>
-
-                    <v-list-item-subtitle class="mb-3">
-                      <span>Description :</span>
-                      <p>{{ item.description }}</p>
-                    </v-list-item-subtitle>
-
-                    <v-list-item-subtitle class="mb-3">
-                      Attachments : {{ item.attachments_count }}
-                    </v-list-item-subtitle>
-
-                    Tags :
-                    <v-chip-group>
-                      <v-chip v-for="tag in item.tags" :key="tag">{{
-                        tag.name
-                      }}</v-chip>
-                    </v-chip-group>
-
-                    <v-divider></v-divider>
-                  </v-list-item>
-                </v-list>
-
-                <v-divider></v-divider>
-                <v-pagination
-                  :length="meta.last_page"
-                  v-model="currentPage"
-                  @input="changePage"
-                ></v-pagination>
-              </template>
-
-              <template v-else>
-                <div align="center" class="mt-5">No Task Found</div>
-              </template>
-            </v-card>
-          </v-container>
-        </v-col>
-
-        <v-col cols="12" lg="4" md="5">
-          <v-container>
-            <v-card class="mx-auto overflow-auto" max-width="450">
-              <v-toolbar color="teal-lighten-2">
-                <v-toolbar-title>Completed List</v-toolbar-title>
-              </v-toolbar>
-
-              <v-progress-linear
-                :active="loading2"
-                :indeterminate="loading2"
-                absolute
-                bottom
-                color="white"
-              ></v-progress-linear>
-
-              <template v-if="taskStore.completedTasks?.length > 0">
-                <v-list
-                  lines="three"
-                  select-strategy="classic"
-                  max-height="435"
-                >
-                  <v-list-subheader>Completed</v-list-subheader>
-
-                  <v-list-item
-                    v-for="item in taskStore.completedTasks.filter(
-                      (task) => task.is_completed === 1
-                    )"
-                  >
-                    <template v-slot:prepend>
-                      <v-list-item-action start>
-                        <v-checkbox-btn
-                          @click="taskUncomplete(item.id)"
-                        ></v-checkbox-btn>
-                      </v-list-item-action>
-                    </template>
-
-                    <template v-slot:append>
-                      <Form :task="item" />
-                      <Delete
-                        :item="item"
-                        :name="item.title"
-                        @delete="deleteTask(item)"
-                      />
-                    </template>
-
-                    <v-list-item-title>
-                      <ViewForm :task="item" />
-                    </v-list-item-title>
-
-                    <v-list-item-subtitle>
-                      <span class="font-weight-bold">Priority :</span>
-                      {{ displayPriority(item) }}
-                    </v-list-item-subtitle>
-
-                    <v-list-item-subtitle class="mb-3">
-                      <div>Due Date : {{ item.due_date }}</div>
-                    </v-list-item-subtitle>
-
-                    <v-list-item-subtitle class="mb-3">
-                      <span>Description :</span>
-                      <p>{{ item.description }}</p>
-                    </v-list-item-subtitle>
-
-                    <v-list-item-subtitle class="mb-3">
-                      Attachments : {{ item.attachments_count }}
-                    </v-list-item-subtitle>
-
-                    Tags :
-                    <v-chip-group>
-                      <v-chip v-for="tag in item.tags" :key="tag">{{
-                        tag.name
-                      }}</v-chip>
-                    </v-chip-group>
-                    <v-divider></v-divider>
-                  </v-list-item>
-                </v-list>
-
-                <v-divider></v-divider>
-                <v-pagination
-                  :length="meta.last_page"
-                  v-model="currentPage"
-                  @input="changePage"
-                ></v-pagination>
-              </template>
-
-              <template v-else>
-                <div align="center" class="mt-5">No Task Found</div>
-              </template>
-            </v-card>
-          </v-container>
-        </v-col>
-      </v-row> -->
-
       <v-container>
         <v-row>
           <v-col cols="12">
-            <v-text-field variant="outlined" placeholder="Search..." />
+            <v-text-field
+              variant="outlined"
+              placeholder="Search..."
+              v-model="search"
+              @update:model-value="onSearch"
+              hide-details="auto"
+            />
+          </v-col>
+
+          <v-col cols="12" xl="10">
+            <v-chip-group
+              multiple
+              column
+              v-model="priority"
+              @update:model-value="onSelectPriority"
+            >
+              <v-chip filter variant="outlined" value="1"> Low </v-chip>
+              <v-chip filter variant="outlined" value="2"> Normal </v-chip>
+              <v-chip filter variant="outlined" value="3"> High </v-chip>
+              <v-chip filter variant="outlined" value="4"> Urgent </v-chip>
+            </v-chip-group>
+          </v-col>
+
+          <v-col cols="12" xl="2">
+            <v-checkbox
+              @update:model-value="onChangeCompleted"
+              v-model="completed"
+              label="Completed"
+              value=""
+            ></v-checkbox>
           </v-col>
 
           <v-col cols="12" v-for="task in taskStore.tasks.data" lg="6" xl="3">
             <v-card variant="outlined">
               <v-card-title class="d-flex justify-space-between">
-                {{ task.title }}
+                <ViewForm :task="task" />
 
                 <v-chip
                   v-if="task.priority !== null"
-                  :color="priority(task.priority)"
+                  :color="priorityColor(task.priority)"
                 >
                   {{ priorityMapping[task.priority] }}</v-chip
                 >
@@ -247,7 +63,7 @@
               <v-divider />
 
               <v-card-actions>
-                <v-btn> Complete </v-btn>
+                <v-btn @click="taskComplete(task)"> Complete </v-btn>
 
                 <v-spacer />
 
@@ -288,6 +104,9 @@ const loading = ref(false);
 const loading2 = ref(false);
 const error = ref();
 const id = ref();
+const tags = ref();
+const priority = ref([]);
+const completed = ref(false);
 
 const meta = ref({});
 const currentPage = ref(meta.current_page || 1);
@@ -316,7 +135,7 @@ const archiveTask = async () => {
 const taskComplete = async (item) => {
   loading.value = true;
   try {
-    await taskStore.completeTask(item);
+    await taskStore.completeTask(item.id);
     await taskStore.getTasks();
     loading.value = false;
   } catch (error) {
@@ -344,7 +163,7 @@ const priorityMapping = {
   4: "Urgent",
 };
 
-const priority = (order) => {
+const priorityColor = (order) => {
   let color = "";
 
   switch (order) {
@@ -391,12 +210,34 @@ const onSearch = async () => {
   await fetchData();
 };
 
+const onSelectTag = async () => {
+  await fetchData();
+};
+
+const onSelectPriority = async () => {
+  await fetchData();
+};
+
+const onChangeCompleted = async () => {
+  await fetchData();
+};
+
 const fetchData = async () => {
   const payload = new URLSearchParams();
 
   if (search.value) {
-    payload.append("filter[name]", search.value);
+    payload.append("q", search.value);
   }
+
+  if (tags.value) {
+    payload.append("tag", tags.value);
+  }
+
+  if (priority.value) {
+    payload.append("filter[priority]", priority.value.toString());
+  }
+
+  payload.append("filter[is_completed]", completed.value);
 
   await taskStore.getTasks(payload);
 };

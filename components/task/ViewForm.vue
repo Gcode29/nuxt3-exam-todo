@@ -1,6 +1,5 @@
 <template>
   <div>
-    <span>Title : </span>
     <a
       href="#"
       @click="openDialog"
