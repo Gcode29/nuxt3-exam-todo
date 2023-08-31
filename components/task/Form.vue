@@ -83,6 +83,19 @@
               label="Upload"
               variant="outlined"
             ></v-file-input>
+
+            <v-chip-group>
+              <v-chip
+                v-for="attachment in files"
+                :key="attachment"
+                class="mr-2 mb-2"
+                label
+                append-icon="mdi-close-circle"
+                @click="deleteFile(attachment)"
+              >
+                {{ attachment.filename }}
+              </v-chip>
+            </v-chip-group>
           </v-container>
           <v-divider></v-divider>
           <v-container>
@@ -113,6 +126,39 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog v-model="deleteDialog" width="400">
+      <v-card class="mx-auto">
+        <v-container>
+          <h2 class="text-center">Delete</h2>
+
+          <p class="text-center mt-3">
+            Are you sure you would like to delete this file?
+          </p>
+        </v-container>
+
+        <v-divider></v-divider>
+
+        <v-container>
+          <v-row>
+            <v-col>
+              <v-btn
+                block
+                depressed
+                color="error"
+                @click="deleteFunction(attachment)"
+              >
+                Delete
+              </v-btn>
+            </v-col>
+
+            <v-col>
+              <v-btn text block @click="deleteDialogClose">Cancel</v-btn>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card>
+    </v-dialog>
+
     <v-snackbar
       v-model="snackbar"
       variant="tonal"
@@ -139,9 +185,11 @@ const helper = useObjectHelper();
 const taskStore = useTaskStore();
 const tagStore = useTagStore();
 const userStore = useUserStore();
-let snackbar_color = ref("");
-let snackbar_text = ref("");
-let snackbar = ref(false);
+const snackbar_color = ref("");
+const snackbar_text = ref("");
+const snackbar = ref(false);
+const deleteDialog = ref(false);
+const fileSelected = ref();
 const now = ref(dayjs().format("YYYY-MM-DD"));
 
 const props = defineProps({
@@ -169,6 +217,19 @@ const prioritySection = ref([
     type: "Urgent",
   },
 ]);
+
+const deleteFunction = async () => {
+  console.log(fileSelected.value);
+};
+
+const deleteFile = async (attachment) => {
+  deleteDialog.value = true;
+  fileSelected.value = attachment;
+};
+
+const deleteDialogClose = async (e) => {
+  deleteDialog.value = false;
+};
 
 const openDialog = async (e) => {
   dialog.value = true;
@@ -201,6 +262,7 @@ const dueDate = ref();
 const priorityLevel = ref();
 const tags = ref(null);
 const uploadedFiles = ref([]);
+const files = ref([]);
 const errors = ref({});
 
 const fetchTags = async () => {
@@ -208,7 +270,6 @@ const fetchTags = async () => {
 };
 
 const updateTask = async () => {
-  console.log("uploadedFiles:", uploadedFiles);
   dialog.value = true;
   await fetchTags();
 
@@ -219,9 +280,7 @@ const updateTask = async () => {
     dueDate.value = props.task.due_date;
     priorityLevel.value = props.task.priority;
     tags.value = props.task.tags.map((tag) => tag.id);
-    uploadedFiles.value = props.task.attachments.map(
-      (attachment) => attachment.filename
-    );
+    files.value = props.task.attachments;
   }
 };
 
