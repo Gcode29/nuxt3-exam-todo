@@ -134,7 +134,7 @@
 					>
 					</v-btn>
 					<v-btn
-						:disabled="taskStore.tasks?.meta?.current_page !== 1"
+						:disabled="taskStore.tasks?.meta?.last_page === page"
 						@click="getNextPage"
 						class="ml-1"
 						align="center"
@@ -190,7 +190,7 @@
 	};
 
 	const getNextPage = async () => {
-		if (page.value < taskStore.meta.last_page) {
+		if (taskStore.tasks?.meta?.current_page < taskStore.tasks?.meta.last_page) {
 			page.value = page.value + 1;
 			await fetchData();
 		} else {
