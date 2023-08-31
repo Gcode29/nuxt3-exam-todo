@@ -132,7 +132,7 @@
                 <Delete
                   :item="task"
                   :name="task.title"
-                  @delete="deleteTag(task)"
+                  @delete="deleteTaskFunction(task)"
                 />
               </v-card-actions>
             </v-card>
@@ -264,7 +264,7 @@ const taskComplete = async (item) => {
   loading.value = true;
   try {
     await taskStore.completeTask(item.id);
-    await taskStore.getTasks();
+    await fetchData();
     loading.value = false;
   } catch (error) {
     console.log(error);
@@ -345,12 +345,12 @@ const displayPriority = (task) => {
   return priorityMapping[task.priority] || "Unknown";
 };
 
-const deleteTask = async (item) => {
+const deleteTaskFunction = async (item) => {
   loading.value = true;
   error.value = null;
   try {
     snackbar.value = true;
-    await taskStore.delete_task(item.id);
+    await taskStore.deleteTask(item.id);
     await taskStore.getTasks();
     loading.value = false;
   } catch (error) {
