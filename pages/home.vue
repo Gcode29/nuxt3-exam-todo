@@ -72,7 +72,7 @@
                 <v-btn @click="taskComplete(task)"> Complete </v-btn>
 
                 <v-spacer />
-
+                <v-btn icon="mdi-square-edit-outline" />
                 <v-btn icon="mdi-archive-arrow-down-outline" />
                 <v-btn icon="mdi-delete-outline" />
               </v-card-actions>
