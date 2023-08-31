@@ -1,12 +1,6 @@
 <template>
   <div>
-    <v-btn
-      size="small"
-      color="red"
-      icon="mdi-trash-can"
-      variant="text"
-      @click="open"
-    />
+    <v-btn icon="mdi-delete-outline" variant="text" @click="open" />
 
     <v-dialog v-model="dialog" width="400">
       <v-card class="mx-auto">

@@ -70,6 +70,7 @@
           </v-col>
 
           <v-col
+            v-if="taskStore.tasks?.data?.length > 0"
             cols="12"
             v-for="task in taskStore.tasks.data"
             lg="6"
@@ -106,7 +107,7 @@
               <v-card-actions>
                 <v-btn
                   v-if="task.is_completed"
-                  @click="taskComplete(task)"
+                  @click="taskUncomplete(task)"
                   color="teal"
                 >
                   Completed
@@ -128,9 +129,17 @@
                   icon="mdi-archive-arrow-up-outline"
                   @click="restoreTask(task)"
                 />
-                <v-btn icon="mdi-delete-outline" />
+                <Delete
+                  :item="task"
+                  :name="task.title"
+                  @delete="deleteTag(task)"
+                />
               </v-card-actions>
             </v-card>
+          </v-col>
+
+          <v-col v-else cols="12" lg="6" xl="3" align="center">
+            <span>No Task Found !</span>
           </v-col>
         </v-row>
 
@@ -180,7 +189,7 @@ definePageMeta({ middleware: "is-logged-out" });
 const taskStore = useTaskStore();
 const search = ref();
 const snackbar = ref(false);
-const archivedLoading = ref(false);
+const loading = ref(false);
 const loading2 = ref(false);
 const error = ref();
 const id = ref();
@@ -266,7 +275,7 @@ const taskComplete = async (item) => {
 const taskUncomplete = async (item) => {
   loading2.value = true;
   try {
-    await taskStore.uncompleteTask(item);
+    await taskStore.uncompleteTask(item.id);
     await taskStore.getTasks();
     loading2.value = false;
   } catch (error) {

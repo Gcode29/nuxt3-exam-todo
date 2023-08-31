@@ -95,6 +95,8 @@
 import { useUserStore } from "~/stores/users";
 const userStore = useUserStore();
 
+definePageMeta({ middleware: "is-logged-in" });
+
 const router = useRouter();
 const emailRules = [
   (v) => !!v || "E-mail is required",

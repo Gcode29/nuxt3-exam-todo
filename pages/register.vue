@@ -63,7 +63,7 @@
 import { ref } from "vue";
 import { useUserStore } from "~~/stores/users";
 const userStore = useUserStore();
-
+definePageMeta({ middleware: "is-logged-in" });
 const router = useRouter();
 
 let show1 = ref(false);

@@ -65,6 +65,8 @@ import Delete from "~/components/DeleteModal.vue";
 import { useTagStore } from "~~/stores/tags";
 import { ref } from "vue";
 
+definePageMeta({ middleware: "is-logged-out" });
+
 const tagStore = useTagStore();
 const search = ref();
 const snackbar = ref(false);

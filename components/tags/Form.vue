@@ -10,11 +10,9 @@
 
     <v-btn
       v-else
-      color="blue"
       icon="mdi-pencil-box-outline"
-      variant="text"
-      size="small"
       @click="updateTag"
+      variant="text"
     >
     </v-btn>
 
