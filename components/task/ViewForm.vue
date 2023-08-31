@@ -54,10 +54,14 @@
               <v-chip
                 v-for="file in props.task.attachments"
                 :key="file.id"
-                @click="downloadFile(file)"
                 prepend-icon="mdi-download"
               >
-                {{ file.filename }}
+                <a
+                  target="_blank"
+                  style="text-decoration: none; color: inherit"
+                  :href="`http://localhost:8000/${file.path}`"
+                  >{{ file.filename }}</a
+                >
               </v-chip>
             </v-chip-group>
           </div>
@@ -89,10 +93,6 @@ const priorityMapping = {
   2: "Normal",
   3: "High",
   4: "Urgent",
-};
-
-const downloadFile = (file) => {
-  //
 };
 
 const displayPriority = computed(() => {
