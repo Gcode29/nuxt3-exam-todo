@@ -98,6 +98,7 @@ import ViewForm from "~/components/task/ViewForm.vue";
 import { useTaskStore } from "~/stores/tasks";
 import { ref } from "vue";
 import { useUserStore } from "~/stores/users";
+import dayjs from "dayjs";
 
 definePageMeta({ middleware: "is-logged-out" });
 
@@ -111,6 +112,7 @@ const id = ref();
 const tags = ref();
 const priority = ref([]);
 const completed = ref(false);
+const now = ref(dayjs().format("YYYY-MM-DD"));
 
 const meta = ref({});
 const currentPage = ref(meta.current_page || 1);

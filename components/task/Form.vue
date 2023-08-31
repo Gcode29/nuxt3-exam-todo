@@ -53,6 +53,7 @@
               label="Due Date"
               variant="outlined"
               :error-messages="errors?.due_date"
+              :min="now"
             />
 
             <v-combobox
@@ -136,6 +137,7 @@ import useObjectHelper from "~/composables/helper";
 import { useTaskStore } from "~/stores/tasks";
 import { useTagStore } from "~/stores/tags";
 import { useUserStore } from "~/stores/users";
+import dayjs from "dayjs";
 
 const helper = useObjectHelper();
 const taskStore = useTaskStore();
@@ -144,6 +146,7 @@ const userStore = useUserStore();
 let snackbar_color = ref("");
 let snackbar_text = ref("");
 let snackbar = ref(false);
+const now = ref(dayjs().format("YYYY-MM-DD"));
 
 const props = defineProps({
   task: {
