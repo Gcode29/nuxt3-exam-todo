@@ -54,12 +54,14 @@
 							@change="onChangeCompleted"
 						/>
 						<label class="ml-1">Completed</label>
-						<!-- <v-checkbox
-							@change="onChangeCompleted"
-							v-model="completed"
-							label="Completed"
-							value=""
-						></v-checkbox> -->
+
+						<input
+							class="ml-3"
+							type="checkbox"
+							v-model="archived"
+							@change="onChangeArchived"
+						/>
+						<label class="ml-1">Archived</label>
 					</v-col>
 
 					<v-col cols="12">
@@ -109,7 +111,13 @@
 								<Form :task="task" />
 								<v-btn
 									icon="mdi-archive-arrow-down-outline"
-									@click="archiveTask"
+									@click="archiveTask(task.id)"
+									v-if="task.deleted_at === null"
+								/>
+								<v-btn
+									v-else
+									icon="mdi-archive-arrow-up-outline"
+									@click="restoreTask(task.id)"
 								/>
 								<v-btn icon="mdi-delete-outline" />
 							</v-card-actions>
@@ -169,6 +177,7 @@
 	const tags = ref();
 	const priority = ref([]);
 	const completed = ref(false);
+	const archived = ref(false);
 	const now = ref(dayjs().format("YYYY-MM-DD"));
 	const column = ref("title");
 	const sort = ref("asc");
@@ -189,10 +198,24 @@
 		}
 	};
 
-	const archiveTask = async () => {
+	const archiveTask = async (item) => {
 		loading.value = true;
 		try {
-			// soft delete
+			await taskStore.archiveTask(item);
+			await fetchData();
+			loading.value = false;
+		} catch (error) {
+			console.log(error);
+			loading.value = false;
+		}
+	};
+
+	const restoreTask = async (item) => {
+		loading.value = true;
+		try {
+			await taskStore.restoreTask(item);
+			await fetchData();
+			loading.value = false;
 		} catch (error) {
 			console.log(error);
 			loading.value = false;
@@ -322,6 +345,11 @@
 		await fetchData();
 	};
 
+	const onChangeArchived = async () => {
+		console.log("Checkbox changed:", archived.value);
+		await fetchData();
+	};
+
 	const fetchData = async () => {
 		const payload = new URLSearchParams({ page: page.value });
 
@@ -331,6 +359,10 @@
 
 		if (tags.value) {
 			payload.append("tag", tags.value);
+		}
+
+		if (archived.value) {
+			payload.append("filter[trashed]", archived.value ? "only" : "");
 		}
 
 		if (priority.value) {
