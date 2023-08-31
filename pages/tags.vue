@@ -80,7 +80,7 @@ const deleteTag = async (item) => {
   error.value = null;
   try {
     snackbar.value = true;
-    await tagStore.delete_tag(item.selectable.id);
+    await tagStore.deleteTag(item.selectable.id);
     await tagStore.getTags();
     loading.value = false;
   } catch (error) {

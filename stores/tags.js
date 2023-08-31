@@ -16,19 +16,19 @@ export const useTagStore = defineStore("tag", {
       this.$state.tags = data.data;
     },
 
-    async save_tag(name) {
+    async saveTag(name) {
       await $axios.post("api/tags", {
         name: name,
       });
     },
 
-    async update_tag(name, id) {
+    async updateTag(name, id) {
       await $axios.patch(`api/tags/${id}`, {
         name: name,
       });
     },
 
-    async delete_tag(id) {
+    async deleteTag(id) {
       await $axios.delete(`api/tags/${id}`);
     },
   },
