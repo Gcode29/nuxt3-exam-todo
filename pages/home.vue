@@ -107,20 +107,32 @@
 
 								<v-spacer />
 								<Form :task="task" />
-								<v-btn icon="mdi-archive-arrow-down-outline" />
+								<v-btn
+									icon="mdi-archive-arrow-down-outline"
+									@click="archiveTask"
+								/>
 								<v-btn icon="mdi-delete-outline" />
 							</v-card-actions>
 						</v-card>
 					</v-col>
 				</v-row>
 
-				<div class="text-center">
-					<v-pagination
-						v-model="page"
-						:length="4"
-						prev-icon="mdi-menu-left"
-						next-icon="mdi-menu-right"
-					></v-pagination>
+				<div class="text-center mt-5">
+					<v-btn
+						:disabled="taskStore.tasks?.meta?.current_page === 1"
+						class="mr-1"
+						align="center"
+						icon="mdi-chevron-left"
+					>
+					</v-btn>
+					<v-btn
+						:disabled="taskStore.tasks?.meta?.current_page !== 1"
+						@click="getNextPage"
+						class="ml-1"
+						align="center"
+						icon="mdi-chevron-right"
+					>
+					</v-btn>
 				</div>
 			</v-container>
 		</v-main>
@@ -160,6 +172,7 @@
 	const now = ref(dayjs().format("YYYY-MM-DD"));
 	const column = ref("title");
 	const sort = ref("asc");
+	const page = ref(1);
 
 	const meta = ref({});
 	const currentPage = ref(meta.current_page || 1);
@@ -167,11 +180,12 @@
 		currentPage.value = page;
 	};
 
-	const getNextPage = () => {
-		if (meta.current_page < meta.last_page) {
-			return meta.current_page + 1;
+	const getNextPage = async () => {
+		if (page.value < taskStore.meta.last_page) {
+			page.value = page.value + 1;
+			await fetchData();
 		} else {
-			return null; // No next page
+			return null;
 		}
 	};
 
@@ -309,7 +323,7 @@
 	};
 
 	const fetchData = async () => {
-		const payload = new URLSearchParams();
+		const payload = new URLSearchParams({ page: page.value });
 
 		if (search.value) {
 			payload.append("q", search.value);
