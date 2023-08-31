@@ -55,7 +55,9 @@
 
               <div class="px-4 mb-4"></div>
 
-              <v-card-subtitle>{{ task.due_date }}</v-card-subtitle>
+              <v-card-subtitle v-if="task.due_date">{{
+                dayjs(task.due_date).format("YYYY-MM-DD")
+              }}</v-card-subtitle>
               <v-card-text>{{ task.description }}</v-card-text>
 
               <div class="px-4" v-if="task.tags.length > 0">
