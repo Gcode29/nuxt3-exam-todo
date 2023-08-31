@@ -1,7 +1,7 @@
 <template>
   <AuthLayout>
     <v-main>
-      <v-row>
+      <!-- <v-row>
         <v-container>
           <v-col
             cols="12"
@@ -212,7 +212,52 @@
             </v-card>
           </v-container>
         </v-col>
-      </v-row>
+      </v-row> -->
+
+      <v-container>
+        <v-row>
+          <v-col cols="12">
+            <v-text-field variant="outlined" placeholder="Search..." />
+          </v-col>
+
+          <v-col cols="12" v-for="task in taskStore.tasks.data" lg="6" xl="3">
+            <v-card variant="outlined">
+              <v-card-title class="d-flex justify-space-between">
+                {{ task.title }}
+
+                <v-chip
+                  v-if="task.priority !== null"
+                  :color="priority(task.priority)"
+                >
+                  {{ priorityMapping[task.priority] }}</v-chip
+                >
+              </v-card-title>
+
+              <div class="px-4 mb-4"></div>
+
+              <v-card-subtitle>{{ task.due_date }}</v-card-subtitle>
+              <v-card-text>{{ task.description }}</v-card-text>
+
+              <div class="px-4" v-if="task.tags.length > 0">
+                <v-chip-group>
+                  <v-chip v-for="tag in task.tags"> {{ tag.name }}</v-chip>
+                </v-chip-group>
+              </div>
+
+              <v-divider />
+
+              <v-card-actions>
+                <v-btn> Complete </v-btn>
+
+                <v-spacer />
+
+                <v-btn icon="mdi-archive-arrow-down-outline" />
+                <v-btn icon="mdi-delete-outline" />
+              </v-card-actions>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
     </v-main>
 
     <v-snackbar v-model="snackbar" variant="tonal" color="red" location="top">
@@ -271,8 +316,8 @@ const archiveTask = async () => {
 const taskComplete = async (item) => {
   loading.value = true;
   try {
-    await taskStore.complete_task(item);
-    await taskStore.get_tasks();
+    await taskStore.completeTask(item);
+    await taskStore.getTasks();
     loading.value = false;
   } catch (error) {
     console.log(error);
@@ -283,8 +328,8 @@ const taskComplete = async (item) => {
 const taskUncomplete = async (item) => {
   loading2.value = true;
   try {
-    await taskStore.uncomplete_task(item);
-    await taskStore.get_tasks();
+    await taskStore.uncompleteTask(item);
+    await taskStore.getTasks();
     loading2.value = false;
   } catch (error) {
     console.log(error);
@@ -299,6 +344,29 @@ const priorityMapping = {
   4: "Urgent",
 };
 
+const priority = (order) => {
+  let color = "";
+
+  switch (order) {
+    case 1:
+      color = "default";
+      break;
+    case 2:
+      color = "blue";
+      break;
+    case 3:
+      color = "yellow";
+      break;
+    case 4:
+      color = "red";
+      break;
+    default:
+      color = "default";
+  }
+
+  return color;
+};
+
 const displayPriority = (task) => {
   return priorityMapping[task.priority] || "Unknown";
 };
@@ -309,7 +377,7 @@ const deleteTask = async (item) => {
   try {
     snackbar.value = true;
     await taskStore.delete_task(item.id);
-    await taskStore.get_tasks();
+    await taskStore.getTasks();
     loading.value = false;
   } catch (error) {
     loading.value = false;
@@ -330,7 +398,7 @@ const fetchData = async () => {
     payload.append("filter[name]", search.value);
   }
 
-  await taskStore.get_tasks(payload);
+  await taskStore.getTasks(payload);
 };
 
 onMounted(async () => {

@@ -25,5 +25,8 @@
     "nuxt-lodash": "^2.5.0",
     "pinia": "^2.1.6",
     "vite-plugin-vuetify": "^1.0.2"
+  },
+  "volta": {
+    "node": "18.17.1"
   }
 }

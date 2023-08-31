@@ -33,6 +33,7 @@
               label="Title"
               variant="outlined"
               required
+              :error-messages="errors?.title"
             />
 
             <v-text-field
@@ -41,6 +42,7 @@
               label="Description"
               variant="outlined"
               required
+              :error-messages="errors?.description"
             />
 
             <v-text-field
@@ -49,7 +51,7 @@
               v-model="dueDate"
               label="Due Date"
               variant="outlined"
-              placeholder="yyyy/mm/dd"
+              :error-messages="errors?.due_date"
             />
 
             <v-combobox
@@ -152,7 +154,7 @@ const props = defineProps({
 const prioritySection = ref([
   {
     id: 1,
-    type: "low",
+    type: "Low",
   },
   {
     id: 2,
@@ -186,17 +188,19 @@ const close = (e) => {
   priorityLevel.value = "";
   tags.value = "";
   uploadedFiles.value = "";
+  errors.value = {};
 };
+
 const dialog = ref(false);
-let id = ref();
-let loading = ref(false);
-let title = ref();
-let description = ref();
-let dueDate = ref();
-let priorityLevel = ref();
-let tags = ref(null);
-let uploadedFiles = ref([]);
-let errors = ref();
+const id = ref();
+const loading = ref(false);
+const title = ref();
+const description = ref();
+const dueDate = ref();
+const priorityLevel = ref();
+const tags = ref(null);
+const uploadedFiles = ref([]);
+const errors = ref({});
 
 const fetchTags = async () => {
   await tagStore.getTags();
@@ -223,75 +227,83 @@ const updateTask = () => {
   }
 };
 
+const save = async () => {
+  const formData = new FormData();
+  formData.append("title", title.value);
+  formData.append("description", description.value);
+  formData.append("due_date", dueDate.value);
+  formData.append("priority", priorityLevel.value);
+
+  if (tags.value !== null) {
+    const tagsCopy = [...tags.value];
+
+    for (let tag of tagsCopy) {
+      formData.append("selectedTags[]", tag);
+    }
+  }
+
+  if (uploadedFiles.value !== null) {
+    for (let file of uploadedFiles.value) {
+      formData.append("uploadedFiles[]", file);
+    }
+  }
+
+  // console.log(formData.getAll("selectedTags[]"));
+  // Save
+  await userStore.getTokens();
+  await taskStore.saveTask(formData);
+  await taskStore.getTasks();
+  snackbar_color.value = "teal";
+  snackbar.value = true;
+  snackbar_text.value = "Task Successfully Saved !";
+  loading.value = false;
+  close();
+};
+
+const update = async () => {
+  const formData = new FormData();
+  formData.append("_method", "PATCH");
+  formData.append("title", title.value);
+  formData.append("description", description.value);
+  formData.append("due_date", dueDate.value);
+  formData.append("priority", priorityLevel.value);
+  formData.append("task_id", id.value);
+
+  const tagsCopy = [...tags.value];
+
+  for (let tag of tagsCopy) {
+    formData.append("selectedTags[]", tag);
+  }
+
+  for (let file of uploadedFiles.value) {
+    formData.append("uploadedFiles[]", file);
+  }
+
+  // update
+  await userStore.getTokens();
+  await taskStore.updateTask(formData);
+  await taskStore.getTasks();
+  snackbar_color.value = "teal";
+  snackbar.value = true;
+  snackbar_text.value = "Task Successfully Updated !";
+  loading.value = false;
+  close();
+};
+
 const onSubmit = async () => {
   loading.value = true;
   errors.value = null;
+
   try {
     if (helper.isEmptyObject(props.task)) {
-      const formData = new FormData();
-      formData.append("title", title.value);
-      formData.append("description", description.value);
-      formData.append("due_date", dueDate.value);
-      formData.append("priority", priorityLevel.value);
-
-      if (tags.value !== null) {
-        const tagsCopy = [...tags.value];
-
-        for (let tag of tagsCopy) {
-          formData.append("selectedTags[]", tag);
-        }
-      }
-
-      if (uploadedFiles.value !== null) {
-        for (let file of uploadedFiles.value) {
-          formData.append("uploadedFiles[]", file);
-        }
-      }
-
-      // console.log(formData.getAll("selectedTags[]"));
-      // Save
-      await userStore.getTokens();
-      await taskStore.save_task(formData);
-      await taskStore.get_tasks();
-      snackbar_color.value = "teal";
-      snackbar.value = true;
-      snackbar_text.value = "Task Successfully Saved !";
-      loading.value = false;
-      close();
+      await save();
     } else {
-      const formData = new FormData();
-      formData.append("_method", "PATCH");
-      formData.append("title", title.value);
-      formData.append("description", description.value);
-      formData.append("due_date", dueDate.value);
-      formData.append("priority", priorityLevel.value);
-      formData.append("task_id", id.value);
-
-      const tagsCopy = [...tags.value];
-
-      for (let tag of tagsCopy) {
-        formData.append("selectedTags[]", tag);
-      }
-
-      for (let file of uploadedFiles.value) {
-        formData.append("uploadedFiles[]", file);
-      }
-
-      // update
-      await userStore.getTokens();
-      await taskStore.update_task(formData);
-      await taskStore.get_tasks();
-      snackbar_color.value = "teal";
-      snackbar.value = true;
-      snackbar_text.value = "Task Successfully Updated !";
-      loading.value = false;
-      close();
+      await update();
     }
   } catch (error) {
+    console.log(error);
     loading.value = false;
-    errors.value = error.response
-      ? error.response.data.errors
-      : "An error occured.";
+    errors.value = error?.response?.data?.errors ?? {};
   }
 };
 </script>
